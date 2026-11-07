@@ -12,7 +12,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 AI_DIR = Path(__file__).resolve().parent.parent  # tutor/ai
 REPO_ENV = AI_DIR.parent / ".env"  # tutor/.env, shared with Django locally
 
-ProviderName = Literal["mock", "ollama", "hosted"]
+ProviderName = Literal["mock", "ollama", "gemini", "hosted"]
 
 
 class Settings(BaseSettings):
@@ -32,6 +32,16 @@ class Settings(BaseSettings):
     ollama_keep_alive: str = Field("30m", alias="TUTOR_OLLAMA_KEEP_ALIVE")
     ollama_max_batch_size: int = Field(32, alias="TUTOR_OLLAMA_MAX_BATCH_SIZE", ge=1, le=64)
     ollama_timeout_seconds: float = Field(180.0, alias="TUTOR_OLLAMA_TIMEOUT_SECONDS", gt=0, le=900)
+    # Gemini chat configuration
+    gemini_api_key: SecretStr | None = Field(
+        None,
+        alias="TUTOR_GEMINI_API_KEY",
+    )
+    gemini_chat_model: str = Field(
+        "gemini-3.5-flash-lite",
+        alias="TUTOR_GEMINI_CHAT_MODEL",
+        min_length=1,
+    )
     ollama_max_batch_size: int = Field(32, alias="TUTOR_OLLAMA_MAX_BATCH_SIZE", ge=1, le=64)
     ollama_connect_timeout: float = Field(15.0, alias="TUTOR_OLLAMA_CONNECT_TIMEOUT", gt=0, le=300)
     query_cache_max_entries: int = Field(2000, alias="TUTOR_AI_QUERY_CACHE_MAX_ENTRIES", ge=0, le=50_000)
@@ -80,6 +90,8 @@ class Settings(BaseSettings):
     def _production_rules(self) -> "Settings":
         if self.environment in ("hosted", "production") and self.provider == "ollama":
             raise ValueError("a hosted service can't use a laptop's Ollama; use mock (demo) or hosted (production)")
+        if self.provider == "gemini" and self.gemini_api_key is None:
+            raise ValueError("TUTOR_GEMINI_API_KEY is required when Gemini is selected")
         if self.environment == "production" and self.provider == "mock":
             raise ValueError("production must not answer students with the mock provider")
         return self
@@ -95,3 +107,5 @@ class Settings(BaseSettings):
 @lru_cache
 def get_settings() -> Settings:
     return Settings()  # values come from the environment (validated at start-up)
+
+
