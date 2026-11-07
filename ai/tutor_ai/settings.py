@@ -30,6 +30,7 @@ class Settings(BaseSettings):
     ollama_chat_model: str = Field("llama3.2", alias="TUTOR_OLLAMA_CHAT_MODEL", min_length=1)
     ollama_embed_model: str = Field("nomic-embed-text", alias="TUTOR_OLLAMA_EMBED_MODEL", min_length=1)
     ollama_keep_alive: str = Field("30m", alias="TUTOR_OLLAMA_KEEP_ALIVE")
+    ollama_max_batch_size: int = Field(32, alias="TUTOR_OLLAMA_MAX_BATCH_SIZE", ge=1, le=64)
     ollama_timeout_seconds: float = Field(180.0, alias="TUTOR_OLLAMA_TIMEOUT_SECONDS", gt=0, le=900)
     ollama_max_batch_size: int = Field(32, alias="TUTOR_OLLAMA_MAX_BATCH_SIZE", ge=1, le=64)
     ollama_connect_timeout: float = Field(15.0, alias="TUTOR_OLLAMA_CONNECT_TIMEOUT", gt=0, le=300)
