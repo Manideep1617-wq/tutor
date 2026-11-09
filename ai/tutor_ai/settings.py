@@ -12,7 +12,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 AI_DIR = Path(__file__).resolve().parent.parent  # tutor/ai
 REPO_ENV = AI_DIR.parent / ".env"  # tutor/.env, shared with Django locally
 
-ProviderName = Literal["mock", "ollama", "gemini", "hosted"]
+ProviderName = Literal["mock", "ollama", "gemini", "gateway", "hosted"]
 
 
 class Settings(BaseSettings):
@@ -41,6 +41,15 @@ class Settings(BaseSettings):
         "gemini-3.5-flash-lite",
         alias="TUTOR_GEMINI_CHAT_MODEL",
         min_length=1,
+    )
+    # LLM Gateway configuration
+    gateway_primary: Literal["mock", "ollama", "gemini"] = Field(
+        "gemini",
+        alias="TUTOR_GATEWAY_PRIMARY",
+    )
+    gateway_fallback: Literal["mock", "ollama", "gemini", "none"] = Field(
+        "ollama",
+        alias="TUTOR_GATEWAY_FALLBACK",
     )
     ollama_connect_timeout: float = Field(15.0, alias="TUTOR_OLLAMA_CONNECT_TIMEOUT", gt=0, le=300)
     query_cache_max_entries: int = Field(2000, alias="TUTOR_AI_QUERY_CACHE_MAX_ENTRIES", ge=0, le=50_000)
@@ -89,7 +98,10 @@ class Settings(BaseSettings):
     def _production_rules(self) -> "Settings":
         if self.environment in ("hosted", "production") and self.provider == "ollama":
             raise ValueError("a hosted service can't use a laptop's Ollama; use mock (demo) or hosted (production)")
-        if self.provider == "gemini" and self.gemini_api_key is None:
+        if (
+            self.provider == "gemini"
+            or (self.provider == "gateway" and (self.gateway_primary == "gemini" or self.gateway_fallback == "gemini"))
+        ) and self.gemini_api_key is None:
             raise ValueError("TUTOR_GEMINI_API_KEY is required when Gemini is selected")
         if self.environment == "production" and self.provider == "mock":
             raise ValueError("production must not answer students with the mock provider")
