@@ -1,14 +1,13 @@
 """Tests for LLMGatewayProvider and structured logging observability."""
 
 import asyncio
-from collections.abc import AsyncIterator
 import logging
-from unittest.mock import AsyncMock, MagicMock
+from collections.abc import AsyncIterator
 
 import pytest
 
 from tests.conftest import make_settings
-from tutor_ai.providers.base import Message, ProviderError, ProviderUnavailable
+from tutor_ai.providers.base import Message, ProviderUnavailable
 from tutor_ai.providers.factory import build_provider
 from tutor_ai.providers.gateway import LLMGatewayProvider
 from tutor_ai.providers.mock import MockProvider

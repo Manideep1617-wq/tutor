@@ -117,6 +117,7 @@ class TurnRequest:
     protected_answers: list[str] = field(default_factory=list)
     max_reply_tokens: int = 250
 
+
 @dataclass
 class _Context:
     passages: list[Passage]

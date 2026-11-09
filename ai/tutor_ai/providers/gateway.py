@@ -1,8 +1,8 @@
 """LLM Gateway provider for unified routing, resilient failover, and structured observability."""
 
-from collections.abc import AsyncIterator
 import logging
 import time
+from collections.abc import AsyncIterator
 
 from .base import EmbeddingKind, Message, ModelProvider, ProviderError, ProviderUnavailable
 

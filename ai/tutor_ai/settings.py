@@ -118,5 +118,3 @@ class Settings(BaseSettings):
 @lru_cache
 def get_settings() -> Settings:
     return Settings()  # values come from the environment (validated at start-up)
-
-

@@ -15,9 +15,7 @@ class ProviderNotConfigured(RuntimeError):
 def _build_individual_provider(name: str, settings: Settings) -> ModelProvider:
     """Build an individual underlying model provider by name."""
     if name == "mock":
-        return MockProvider(
-            dimensions=settings.embedding_dimensions
-        )
+        return MockProvider(dimensions=settings.embedding_dimensions)
 
     if name == "ollama":
         return OllamaProvider(
@@ -33,9 +31,7 @@ def _build_individual_provider(name: str, settings: Settings) -> ModelProvider:
 
     if name == "gemini":
         if settings.gemini_api_key is None:
-            raise ProviderNotConfigured(
-                "TUTOR_GEMINI_API_KEY is required for Gemini."
-            )
+            raise ProviderNotConfigured("TUTOR_GEMINI_API_KEY is required for Gemini.")
 
         ollama_provider = OllamaProvider(
             base_url=settings.ollama_url,
@@ -55,9 +51,7 @@ def _build_individual_provider(name: str, settings: Settings) -> ModelProvider:
             timeout_seconds=settings.turn_timeout_seconds,
         )
 
-    raise ProviderNotConfigured(
-        f"The provider '{name}' is not implemented yet."
-    )
+    raise ProviderNotConfigured(f"The provider '{name}' is not implemented yet.")
 
 
 def build_provider(settings: Settings) -> ModelProvider:
