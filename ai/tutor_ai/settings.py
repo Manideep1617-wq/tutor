@@ -42,7 +42,6 @@ class Settings(BaseSettings):
         alias="TUTOR_GEMINI_CHAT_MODEL",
         min_length=1,
     )
-    ollama_max_batch_size: int = Field(32, alias="TUTOR_OLLAMA_MAX_BATCH_SIZE", ge=1, le=64)
     ollama_connect_timeout: float = Field(15.0, alias="TUTOR_OLLAMA_CONNECT_TIMEOUT", gt=0, le=300)
     query_cache_max_entries: int = Field(2000, alias="TUTOR_AI_QUERY_CACHE_MAX_ENTRIES", ge=0, le=50_000)
     db_pool_size: int = Field(10, alias="TUTOR_AI_DB_POOL_SIZE", ge=1, le=100)
